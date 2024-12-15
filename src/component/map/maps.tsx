@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import "./maps.css";
 
 // Improved type declarations without npm types
@@ -8,7 +8,7 @@ declare global {
 			map: (el: HTMLElement) => LeafletMap;
 			tileLayer: (url: string, options: TileLayerOptions) => TileLayer;
 			marker: (coords: [number, number], options?: MarkerOptions) => Marker;
-			divIcon: (options: DivIconOptions) => DivIcon;
+			divIcon: (options: IconOptions) => Icon;
 			icon: (options: IconOptions) => Icon;
 		};
 	}
@@ -40,6 +40,12 @@ interface MarkerOptions {
 }
 
 interface Icon {
+	iconUrl: string;
+	iconSize: [number, number];
+	iconAnchor: [number, number];
+	popupAnchor: [number, number];
+	shadowUrl?: string;
+	shadowSize?: [number, number];
 }
 
 interface IconOptions {
@@ -47,32 +53,18 @@ interface IconOptions {
 	iconSize: [number, number];
 	iconAnchor: [number, number];
 	popupAnchor: [number, number];
-	shadowSize: [number, number];
+	shadowUrl?: string;
+	shadowSize?: [number, number];
 }
 
-function getRandomCoords(
-	center: [number, number],
-	radius: number,
-): [number, number] {
-	const y0 = center[0];
-	const x0 = center[1];
-	const rd = radius / 111300;
 
-	const u = Math.random();
-	const v = Math.random();
-
-	const w = rd * Math.sqrt(u);
-	const t = 2 * Math.PI * v;
-	const x = w * Math.cos(t);
-	const y = w * Math.sin(t);
-
-	const newLat = y + y0;
-	const newLon = x + x0;
-
-	return [newLat, newLon];
+interface MapsProps {
+	activeFilter: string | null;
+	setActiveSiteId: (id: string) => void;
+	activeSiteId: string;
 }
 
-function Maps({ activeFilter, setActiveSiteId, activeSiteId }) {
+function Maps({ activeFilter, setActiveSiteId, activeSiteId }: MapsProps) {
 	const mapRef = useRef<HTMLDivElement | null>(null);
 	const mapInstance = useRef<LeafletMap | null>(null);
 
@@ -82,17 +74,47 @@ function Maps({ activeFilter, setActiveSiteId, activeSiteId }) {
 	const MAP_ATTRIBUTION =
 		'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
-	const locations = [
-			{ id: "1", name: "Goutte", coords: [21.011523, -11.103842], type: "Eau" },
-			{ id: "2", name: "Source", coords: [21.002124, -11.09058], type: "Eau" },
-			{ id: "3", name: "Puits", coords: [21.031523, -11.123842], type: "Eau" },
-			{ id: "4", name: "Bunker Alpha", coords: [21.038498, -11.084229], type: "Bunker" },
-			{ id: "5", name: "Bunker Bravo", coords: [20.989784, -11.121737], type: "Bunker" },
-			{ id: "6", name: "Bunker Charlie", coords: [21.015505, -11.054188], type: "Bunker" },
-			{ id: "7", name: "Bunker Delta", coords: [21.021915, -11.090924], type: "Bunker" },
-			{ id: "8", name: "Station Électrique 1", coords: [20.999159, -11.058394], type: "Electricité" },
-			{ id: "9", name: "Station Électrique 2", coords: [21.021514, -11.10088], type: "Electricité" },
-		];
+	const locations: { id: string; name: string; coords: [number, number]; type: string }[] = [
+		{ id: "1", name: "Goutte", coords: [21.011523, -11.103842], type: "Eau" },
+		{ id: "2", name: "Source", coords: [21.002124, -11.09058], type: "Eau" },
+		{ id: "3", name: "Puits", coords: [21.031523, -11.123842], type: "Eau" },
+		{
+			id: "4",
+			name: "Bunker Alpha",
+			coords: [21.038498, -11.084229],
+			type: "Bunker",
+		},
+		{
+			id: "5",
+			name: "Bunker Bravo",
+			coords: [20.989784, -11.121737],
+			type: "Bunker",
+		},
+		{
+			id: "6",
+			name: "Bunker Charlie",
+			coords: [21.015505, -11.054188],
+			type: "Bunker",
+		},
+		{
+			id: "7",
+			name: "Bunker Delta",
+			coords: [21.021915, -11.090924],
+			type: "Bunker",
+		},
+		{
+			id: "8",
+			name: "Station Électrique 1",
+			coords: [20.999159, -11.058394],
+			type: "Electricité",
+		},
+		{
+			id: "9",
+			name: "Station Électrique 2",
+			coords: [21.021514, -11.10088],
+			type: "Electricité",
+		},
+	];
 
 	useEffect(() => {
 		const L = window.L;
@@ -105,7 +127,7 @@ function Maps({ activeFilter, setActiveSiteId, activeSiteId }) {
 		}
 
 		try {
-			const initialCoords = locations[0].coords;
+			const initialCoords: [number, number] = locations[0].coords;
 			mapInstance.current = L.map(mapRef.current).setView(
 				initialCoords,
 				ZOOM_LEVEL,
@@ -117,33 +139,39 @@ function Maps({ activeFilter, setActiveSiteId, activeSiteId }) {
 			}).addTo(mapInstance.current);
 
 			const defaultIcon = L.icon({
-				iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
-				shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+				iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
+				shadowUrl:
+					"https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
 				iconSize: [25, 41],
 				iconAnchor: [12, 41],
 				popupAnchor: [1, -34],
-				shadowSize: [41, 41]
+				shadowSize: [41, 41],
 			});
 
 			const redIcon = L.icon({
-				iconUrl: '/src/assets/images/map-marker-red.svg',
-				shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+				iconUrl: "/assets/images/map-marker-red.svg",
+				shadowUrl:
+					"https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
 				iconSize: [25, 41],
 				iconAnchor: [12, 41],
 				popupAnchor: [1, -34],
-				shadowSize: [41, 41]
+				shadowSize: [41, 41],
 			});
 
-			locations
-				.filter((location) => !activeFilter || location.type === activeFilter)
-				.forEach((location) => {
-					const marker = L.marker(location.coords, {
-						icon: location.id === activeSiteId ? redIcon : defaultIcon,
-					})
-						.addTo(mapInstance.current)
-						.bindPopup(location.name)
-						.on('click', () => setActiveSiteId(location.id));
+			const filteredLocations = locations.filter(
+				(location) => !activeFilter || location.type === activeFilter
+			);
+
+			for (const location of filteredLocations) {
+				const marker = L.marker(location.coords as [number, number], {
+					icon: location.id === activeSiteId ? redIcon : defaultIcon,
 				});
+				if (mapInstance.current) {
+					marker.addTo(mapInstance.current)
+						.bindPopup(location.name)
+						.on("click", () => setActiveSiteId(location.id));
+				}
+			}
 		} catch (error) {
 			console.error("Erreur d'initialisation de la carte:", error);
 		}
@@ -154,7 +182,7 @@ function Maps({ activeFilter, setActiveSiteId, activeSiteId }) {
 				mapInstance.current = null;
 			}
 		};
-	}, [activeFilter, activeSiteId]);
+	}, [activeFilter, activeSiteId, setActiveSiteId]);
 
 	return (
 		<div className="map_container">

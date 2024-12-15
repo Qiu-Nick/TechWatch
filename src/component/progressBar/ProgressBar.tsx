@@ -14,7 +14,6 @@ interface Site {
 const ProgressBar: React.FC<{ activeSiteId: string | null }> = ({ activeSiteId }) => {
 	const [sites, setSites] = useState<Site[]>([]);
 	const [loading, setLoading] = useState(true);
-	const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
 	// Fonction pour récupérer les données
 

@@ -4,7 +4,6 @@ import Maps from "../component/map/maps";
 import "leaflet/dist/leaflet.css";
 import ProgressBar from "../component/progressBar/ProgressBar";
 import NavBar from "../component/NavBar";
-import Footer from "../component/Footer";
 
 const Browser: React.FC = () => {
 	const [activeFilter, setActiveFilter] = useState<string | null>(null);
@@ -16,7 +15,7 @@ const Browser: React.FC = () => {
 			<Maps
 				activeFilter={activeFilter}
 				setActiveSiteId={setActiveSiteId}
-				activeSiteId={activeSiteId}
+				activeSiteId={activeSiteId ?? ""}
 			/>
 			<ProgressBar activeSiteId={activeSiteId} />
 		</div>
