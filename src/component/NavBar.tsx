@@ -3,10 +3,10 @@ import "./NavBar.css";
 
 interface NavBarProps {
   activeFilter: string;
-  setActiveFilter: (filter: string) => void;
+  setActiveFilter: (filter: string | null) => void;
 }
 
-const NavBar: React.FC<NavBarProps> = ({ setActiveFilter, activeFilter }) => {
+const NavBar: React.FC<NavBarProps> = ({ activeFilter, setActiveFilter }) => {
   const [activeButton, setActiveButton] = useState<string | null>(null);
 
   useEffect(() => {
