@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import "./NavBar.css";
 
 interface NavBarProps {
-  activeFilter: string;
+  activeFilter: string | null;  // activeFilter peut être null aussi
   setActiveFilter: (filter: string | null) => void;
 }
 
@@ -16,10 +16,10 @@ const NavBar: React.FC<NavBarProps> = ({ activeFilter, setActiveFilter }) => {
   const handleButtonClick = (type: string) => {
     if (activeButton === type) {
       setActiveButton(null);
-      setActiveFilter(null);
+      setActiveFilter(null);  // On remet à null pour désactiver le filtre
     } else {
       setActiveButton(type);
-      setActiveFilter(type);
+      setActiveFilter(type);  // On applique le filtre
     }
   };
 
