@@ -57,7 +57,6 @@ interface IconOptions {
 	shadowSize?: [number, number];
 }
 
-
 interface MapsProps {
 	activeFilter: string | null;
 	setActiveSiteId: (id: string) => void;
@@ -74,7 +73,12 @@ function Maps({ activeFilter, setActiveSiteId, activeSiteId }: MapsProps) {
 	const MAP_ATTRIBUTION =
 		'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
-	const locations: { id: string; name: string; coords: [number, number]; type: string }[] = [
+	const locations: {
+		id: string;
+		name: string;
+		coords: [number, number];
+		type: string;
+	}[] = [
 		{ id: "1", name: "Goutte", coords: [21.011523, -11.103842], type: "Eau" },
 		{ id: "2", name: "Source", coords: [21.002124, -11.09058], type: "Eau" },
 		{ id: "3", name: "Puits", coords: [21.031523, -11.123842], type: "Eau" },
@@ -159,7 +163,7 @@ function Maps({ activeFilter, setActiveSiteId, activeSiteId }: MapsProps) {
 			});
 
 			const filteredLocations = locations.filter(
-				(location) => !activeFilter || location.type === activeFilter
+				(location) => !activeFilter || location.type === activeFilter,
 			);
 
 			for (const location of filteredLocations) {
@@ -167,7 +171,8 @@ function Maps({ activeFilter, setActiveSiteId, activeSiteId }: MapsProps) {
 					icon: location.id === activeSiteId ? redIcon : defaultIcon,
 				});
 				if (mapInstance.current) {
-					marker.addTo(mapInstance.current)
+					marker
+						.addTo(mapInstance.current)
 						.bindPopup(location.name)
 						.on("click", () => setActiveSiteId(location.id));
 				}

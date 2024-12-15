@@ -24,6 +24,6 @@ nav ul li .btn:hover {
 }
 
 nav ul li .btn.active {
-    background-color: #8f2a2a;
-    box-shadow: inset 0 3px 5px rgb(0, 0, 0);
+	background-color: #8f2a2a;
+	box-shadow: inset 0 3px 5px rgb(0, 0, 0);
 }
