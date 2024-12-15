@@ -9,17 +9,19 @@ interface NavBarProps {
 const NavBar: React.FC<NavBarProps> = ({ activeFilter, setActiveFilter }) => {
   const [activeButton, setActiveButton] = useState<string | null>(null);
 
+  // Synchronisation de activeButton avec activeFilter
   useEffect(() => {
     setActiveButton(activeFilter);
   }, [activeFilter]);
 
   const handleButtonClick = (type: string) => {
+    // Si le bouton cliqué est déjà actif, on désactive le filtre
     if (activeButton === type) {
       setActiveButton(null);
-      setActiveFilter(null);  // On remet à null pour désactiver le filtre
+      setActiveFilter(null);  // Désactivation du filtre
     } else {
       setActiveButton(type);
-      setActiveFilter(type);  // On applique le filtre
+      setActiveFilter(type);  // Application du filtre
     }
   };
 
@@ -50,7 +52,7 @@ const NavBar: React.FC<NavBarProps> = ({ activeFilter, setActiveFilter }) => {
           <button
             type="button"
             className={`btn ${activeButton === "Electricité" ? "active" : ""}`}
-            id="Electricite"
+            id="Electricité"
             onClick={() => handleButtonClick("Electricité")}
           >
             Electricité
