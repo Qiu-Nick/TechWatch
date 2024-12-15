@@ -9,16 +9,16 @@ const Browser: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
   const [activeSiteId, setActiveSiteId] = useState<string | null>(null);
 
-  // Valeurs de fallback pour éviter les `null`
+  // Utiliser des valeurs par défaut si activeFilter ou activeSiteId est null
   const activeFilterValue = activeFilter ?? "";
   const activeSiteIdValue = activeSiteId ?? "";
 
   return (
     <div>
-      {/* Passer les valeurs gérées avec les fallback */}
+      {/* Passer les valeurs par défaut pour activer un type string */}
       <NavBar setActiveFilter={setActiveFilter} activeFilter={activeFilterValue} />
       <Maps
-        activeFilter={activeFilter}
+        activeFilter={activeFilterValue}
         setActiveSiteId={setActiveSiteId}
         activeSiteId={activeSiteIdValue}
       />
