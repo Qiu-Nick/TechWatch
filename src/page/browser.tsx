@@ -11,7 +11,7 @@ const Browser: React.FC = () => {
 
 	return (
 		<div>
-			<NavBar setActiveFilter={setActiveFilter} activeFilter={activeFilter} />
+			<NavBar setActiveFilter={setActiveFilter} activeFilter={activeFilter ?? ""} />
 			<Maps
 				activeFilter={activeFilter}
 				setActiveSiteId={setActiveSiteId}
